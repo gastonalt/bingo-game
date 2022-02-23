@@ -1,0 +1,27 @@
+<div style="text-align: center;">
+  <h1 *ngIf="bolaLetrero">Siguente bola: {{bolaLetrero.value}}</h1>
+</div>
+<div>
+  <ul style="list-style-type: none;display: flex;">
+    <li *ngFor="let bola of letreroReciente" style="padding: 0 .5em;">
+      {{bola.value}}
+    </li>
+  </ul>
+</div>
+<table>
+  <thead>
+    <tr>
+      <td *ngFor="let letra of letras" class="header">{{letra}}</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let numero of [0,1,2,3,4]">
+      <td
+        *ngFor="let bola of tablero[numero]"
+        (click)="clickCasilla(bola)"
+        [ngClass]="{ 'marcado': bola.fueMarcado === true }"
+      >
+        {{ bola.numero }}
+      </td>
+  </tbody>
+</table>

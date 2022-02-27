@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Bola, Casilla } from 'src/app/models/bola';
 
 @Component({
   selector: 'app-juego',
@@ -6,14 +7,13 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./juego.component.scss'],
 })
 export class JuegoComponent implements OnInit {
-  numbersBingo: any[5][15] = [[], [], [], [], []];
+  numbersBingo: Bola[][] = [[], [], [], [], []];
   bolasYaElegidas: any[] = [];
   letras = ['B', 'I', 'N', 'G', 'O'];
   bolaLetrero : any = this.numbersBingo[1][1];
   letreroReciente: any[] = [];
-  tablero: any[5][5] = [[], [], [], [], []];
+  tablero: Casilla[][] = [[], [], [], [], []];
   miIntervalo: any;
-  ganaste = false;
   bolasRestante = 75;
 
   constructor() {}
@@ -31,31 +31,20 @@ export class JuegoComponent implements OnInit {
     let counter = 0;
     if(counter < 74){
       this.bolasRestante--;
-      let letraRandom = Math.round(Math.random() * 4);
-      let numeroRandom = Math.round(Math.random() * 14);
-      let bolaElegida = this.numbersBingo[letraRandom][numeroRandom];
-      // console.log(bolaElegida);
+      let letraRandom = Math.round(Math.random() * 4), numeroRandom = Math.round(Math.random() * 14), bolaElegida = this.numbersBingo[letraRandom][numeroRandom];
       while(this.bolasYaElegidas.includes(bolaElegida)){
-        letraRandom = Math.round(Math.random() * 4);
-        numeroRandom = Math.round(Math.random() * 14);
-        bolaElegida = this.numbersBingo[letraRandom][numeroRandom];
+        letraRandom = Math.round(Math.random() * 4), numeroRandom = Math.round(Math.random() * 14), bolaElegida = this.numbersBingo[letraRandom][numeroRandom];
       }
-      this.bolasYaElegidas.push(bolaElegida);
-      this.bolaLetrero = bolaElegida;
+      this.bolasYaElegidas.push(bolaElegida); this.bolaLetrero = bolaElegida;
       for (let i = 0; i < 5; i++) {
         this.letreroReciente[i]= this.bolasYaElegidas[this.bolasYaElegidas.length - (i + 2)];
-        if(!this.bolasYaElegidas[this.bolasYaElegidas.length - (i + 2)]){
-          this.letreroReciente[i] = {value: '0'}
-        }
+        if(!this.bolasYaElegidas[this.bolasYaElegidas.length - (i + 2)]) this.letreroReciente[i] = {value: ''};
       }
     }else{
-      this.bolasYaElegidas.forEach((bola)=>{
-        console.log(bola.value)
-      })
       clearInterval(this.miIntervalo);
     }
     counter++;
-   }
+  }
 
   fillNumbersBingo() {
     let count = 0;
@@ -63,86 +52,47 @@ export class JuegoComponent implements OnInit {
     this.letras.forEach((letra) => {
       for (let i = 0; i < 15; i++) {
         count++;
-        const numeroBingo = {
-          id: count - 1,
-          arrayIndex: {
-            i: firstIndexArray,
-            j: i,
-          },
-          value: letra + '' + count,
-          letra: letra,
-          numero: count,
-          estaEnTablero: false,
-          fueCantado: false,
-          fueMarcado: false,
-        };
-        this.numbersBingo[firstIndexArray][i] = numeroBingo;
+        this.numbersBingo[firstIndexArray][i] = new Bola(count -1, firstIndexArray, i, letra + '' + count, letra, count, false, false, false);
       }
       firstIndexArray++;
     });
-    // console.log(this.numbersBingo);
+    console.log(this.numbersBingo)
   }
 
-  clickCasilla(bola: any) {
-    if(this.bolasYaElegidas.includes(bola)){
-      if(!this.ganaste){
-        this.numbersBingo[bola.arrayIndex.i][bola.arrayIndex.j].fueMarcado = true;
-        // console.log(bola)
-        this.tablero[bola.fila][bola.columna].fueMarcado = true;
-        // console.log(this.tablero);
+  clickCasilla(casilla: Casilla) {
+    if(this.bolasYaElegidas.includes(casilla.bola)){
+      if(!this.checkIfGano(casilla)){
+        this.numbersBingo[casilla.bola.pos_i][casilla.bola.pos_j].marcado = true;
+        this.tablero[casilla.fila][casilla.columna].bola.marcado = true;
       }
-    }else{
-      alert('esa bola no salio aun')
     }
-    this.checkIfGano(bola)
+    if(this.checkIfGano(casilla)){
+      alert('Ganaste papix!')
+    }
   }
 
-  checkIfGano(bola: any){
-    let i= 0;
-    let countHorizontal = 0;
-    let countVertical = 0;
-    let countDiagonal = 0;
-    let countAntiDiagonal = 0;
-    this.tablero[bola.fila].forEach(() => {
-      if(this.tablero[bola.fila][i].fueMarcado === true){
-        countHorizontal++;
-      }
-      if(this.tablero[i][bola.columna].fueMarcado === true){
-        countVertical++;
-      }
-      if(this.tablero[i][i].fueMarcado === true){
-        countDiagonal++;
-      }
-      if(this.tablero[i][4-i].fueMarcado === true){
-        countAntiDiagonal++;
-      }
+  checkIfGano(casilla: Casilla){
+    let i= 0, countHorizontal = 0, countVertical = 0, countDiagonal = 0, countAntiDiagonal = 0;
+    this.tablero[casilla.fila].forEach(() => {
+      if(this.tablero[casilla.fila][i].bola.marcado === true) countHorizontal++;
+      if(this.tablero[i][casilla.columna].bola.marcado === true) countVertical++;
+      if(this.tablero[i][i].bola.marcado === true) countDiagonal++;
+      if(this.tablero[i][4-i].bola.marcado === true) countAntiDiagonal++;
       i++;
     });
-    if(countHorizontal === 5 || countVertical === 5 || countDiagonal === 5 || countAntiDiagonal === 5){
-      if(!this.ganaste){
-        alert("ganaste");
-        this.ganaste = true;
-        clearInterval(this.miIntervalo);
-      }
-    }
-
+    return (countHorizontal === 5 || countVertical === 5 || countDiagonal === 5 || countAntiDiagonal === 5) ? true : false;
   }
 
   generarTablero() {
     for (let fila = 0; fila < 5; fila++) {
       for (let columna = 0; columna < 5; columna++) {
-        // hacemos el numero random para el indice
         let numeroRandom = Math.round(Math.random() * 14);
-        // ponemos alguno de las bolitas en el tablero
         let bolaElegida = this.numbersBingo[columna][numeroRandom];
-        //vemos si la bolita ya está en el tablero
         while (bolaElegida.estaEnTablero) {
           numeroRandom = Math.round(Math.random() * 14);
           bolaElegida = this.numbersBingo[columna][numeroRandom];
         }
-        bolaElegida.fila= fila;
-        bolaElegida.columna= columna;
-        this.tablero[fila][columna] = bolaElegida;
+        this.tablero[fila][columna] = new Casilla(bolaElegida, fila, columna);
         this.numbersBingo[columna][numeroRandom].estaEnTablero = true;
       }
     }

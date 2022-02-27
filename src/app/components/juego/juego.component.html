@@ -17,8 +17,8 @@
     </thead>
     <tbody>
         <tr *ngFor="let numero of [0,1,2,3,4]">
-            <td *ngFor="let bola of tablero[numero]" (click)="clickCasilla(bola)" [ngClass]="{ 'marcado': bola.fueMarcado === true }">
-                {{ bola.numero }}
+            <td *ngFor="let casilla of tablero[numero]" (click)="clickCasilla(casilla)" [ngClass]="{ 'marcado': casilla.bola.marcado === true }">
+                {{ casilla.bola.numero }}
             </td>
     </tbody>
 </table>

@@ -1,22 +1,25 @@
 table {
-  display: block;
+    display: block;
 }
 
 td {
-  padding: 1em;
-  border: 1px solid black;
-  text-align: center;
-  height: 20px;
-  width: 20px;
-  cursor: pointer;
+    padding: 1em;
+    border: 1px solid black;
+    text-align: center;
+    height: 20px;
+    width: 20px;
+    cursor: pointer;
 }
 
 .marcado {
-  background-color: red;
+    background-color: red;
+    transition: opacity 1s ease-in;
 }
 
+.marcado:: {}
+
 .header {
-  background-color: black;
-  color: white;
-  cursor: auto;
+    background-color: black;
+    color: white;
+    cursor: auto;
 }

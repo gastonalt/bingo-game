@@ -12,8 +12,9 @@ export class JuegoComponent implements OnInit {
   bolaLetrero : any = this.numbersBingo[1][1];
   letreroReciente: any[] = [];
   tablero: any[5][5] = [[], [], [], [], []];
-  counter = 0;
   miIntervalo: any;
+  ganaste = false;
+  bolasRestante = 75;
 
   constructor() {}
 
@@ -22,12 +23,14 @@ export class JuegoComponent implements OnInit {
     this.generarTablero();
       this.miIntervalo = setInterval(()=>{
         this.getNextBola();
-      }, 5000);
+      }, 3000);
   }
 
 
   getNextBola(){
-    if(this.counter < 74){
+    let counter = 0;
+    if(counter < 74){
+      this.bolasRestante--;
       let letraRandom = Math.round(Math.random() * 4);
       let numeroRandom = Math.round(Math.random() * 14);
       let bolaElegida = this.numbersBingo[letraRandom][numeroRandom];
@@ -51,7 +54,7 @@ export class JuegoComponent implements OnInit {
       })
       clearInterval(this.miIntervalo);
     }
-    this.counter++;
+    counter++;
    }
 
   fillNumbersBingo() {
@@ -82,16 +85,46 @@ export class JuegoComponent implements OnInit {
 
   clickCasilla(bola: any) {
     if(this.bolasYaElegidas.includes(bola)){
-      this.numbersBingo[bola.arrayIndex.i][bola.arrayIndex.j].fueMarcado = true;
-      // console.log(bola)
-      this.tablero[bola.fila][bola.columna].fueMarcado = true;
-      // console.log(this.tablero);
+      if(!this.ganaste){
+        this.numbersBingo[bola.arrayIndex.i][bola.arrayIndex.j].fueMarcado = true;
+        // console.log(bola)
+        this.tablero[bola.fila][bola.columna].fueMarcado = true;
+        // console.log(this.tablero);
+      }
     }else{
       alert('esa bola no salio aun')
     }
+    this.checkIfGano(bola)
   }
 
-  checkGane(){
+  checkIfGano(bola: any){
+    let i= 0;
+    let countHorizontal = 0;
+    let countVertical = 0;
+    let countDiagonal = 0;
+    let countAntiDiagonal = 0;
+    this.tablero[bola.fila].forEach(() => {
+      if(this.tablero[bola.fila][i].fueMarcado === true){
+        countHorizontal++;
+      }
+      if(this.tablero[i][bola.columna].fueMarcado === true){
+        countVertical++;
+      }
+      if(this.tablero[i][i].fueMarcado === true){
+        countDiagonal++;
+      }
+      if(this.tablero[i][4-i].fueMarcado === true){
+        countAntiDiagonal++;
+      }
+      i++;
+    });
+    if(countHorizontal === 5 || countVertical === 5 || countDiagonal === 5 || countAntiDiagonal === 5){
+      if(!this.ganaste){
+        alert("ganaste");
+        this.ganaste = true;
+        clearInterval(this.miIntervalo);
+      }
+    }
 
   }
 

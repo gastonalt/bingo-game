@@ -14,11 +14,16 @@ export class JuegoComponent implements OnInit {
   letreroReciente: any[] = [];
   tablero: Casilla[][] = [[], [], [], [], []];
   miIntervalo: any;
+  arranco = false;
   bolasRestante = 75;
 
   constructor() {}
 
   ngOnInit(): void {
+  }
+
+  arrancar(){
+    this.arranco = true;
     this.fillNumbersBingo();
     this.generarTablero();
       this.miIntervalo = setInterval(()=>{

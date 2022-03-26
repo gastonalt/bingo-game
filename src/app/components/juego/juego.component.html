@@ -1,24 +1,32 @@
-<div style="text-align: center;">
-    <h1 *ngIf="bolaLetrero">Siguente bola: {{bolaLetrero.value}}</h1>
+<div *ngIf="!arranco" class="pantalla1">
+    <button (click)="arrancar()" class="boton_bolilla_grande">Arrancar</button>
 </div>
-<h3>Bolas restantes: {{bolasRestante}}</h3>
-<div>
-    <ul style="list-style-type: none;display: flex;">
-        <li *ngFor="let bola of letreroReciente" style="padding: 0 .5em;">
-            {{bola.value}}
-        </li>
-    </ul>
+<div *ngIf="arranco">
+    <div style="text-align: center; display: flex; justify-content: center; align-items: center;">
+        <h1>Siguente bola: </h1>
+        <h1>
+            <b class="bolilla_grande" *ngIf="bolaLetrero">{{bolaLetrero.value}}</b>
+        </h1>
+    </div>
+    <h3>Bolas restantes: {{bolasRestante}}</h3>
+    <div>
+        <ul style="list-style-type: none;display: flex;">
+            <li *ngFor="let bola of letreroReciente" class="bolilla">
+                {{bola.value}}
+            </li>
+        </ul>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <td *ngFor="let letra of letras" class="header">{{letra}}</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let numero of [0,1,2,3,4]">
+                <td *ngFor="let casilla of tablero[numero]" (click)="clickCasilla(casilla)" [ngClass]="{ 'marcado': casilla.bola.marcado === true }">
+                    {{ casilla.bola.numero }}
+                </td>
+        </tbody>
+    </table>
 </div>
-<table>
-    <thead>
-        <tr>
-            <td *ngFor="let letra of letras" class="header">{{letra}}</td>
-        </tr>
-    </thead>
-    <tbody>
-        <tr *ngFor="let numero of [0,1,2,3,4]">
-            <td *ngFor="let casilla of tablero[numero]" (click)="clickCasilla(casilla)" [ngClass]="{ 'marcado': casilla.bola.marcado === true }">
-                {{ casilla.bola.numero }}
-            </td>
-    </tbody>
-</table>
